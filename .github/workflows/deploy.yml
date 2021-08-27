@@ -1,0 +1,53 @@
+name: Build and Publish
+
+on:
+  push:
+    tags: [v*.*.*]
+
+jobs:
+
+  build-binary-amd64:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin, openbsd]
+        goarch: [amd64]
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $1}')" >> $GITHUB_ENV
+
+    - uses: wangyoucao577/go-release-action@v1.14
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        goversion: "https://dl.google.com/go/go1.16.linux-amd64.tar.gz"
+        project_path: "./"
+        binary_name: ${{ env.REPOSITORY_NAME }}
+        md5sum: FALSE
+        
+  build-binary-arm:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux]
+        goarch: [arm64, arm]
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $1}')" >> $GITHUB_ENV
+
+    - uses: wangyoucao577/go-release-action@v1.14
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        goversion: "https://dl.google.com/go/go1.16.linux-amd64.tar.gz"
+        project_path: "./"
+        binary_name: ${{ env.REPOSITORY_NAME }}
+        md5sum: FALSE
